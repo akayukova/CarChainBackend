@@ -1,4 +1,4 @@
-package mysuperapp.config;
+package config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -23,11 +23,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/", "/home").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/**").permitAll()
+                /*.anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login").permitAll()
-                .and().logout().permitAll();
+                .and().logout().permitAll()*/;
     }
 
     @Autowired
