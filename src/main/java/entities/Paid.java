@@ -10,7 +10,7 @@ public class Paid {
     private String currencyId;
     @SerializedName("price")
     @Expose
-    private Integer price;
+    private Double price;
 
     public String getCurrencyId() {
         return currencyId;
@@ -20,11 +20,11 @@ public class Paid {
         this.currencyId = currencyId;
     }
 
-    public Integer getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

@@ -46,23 +46,25 @@ public class SkyScannerRedirectController {
             @RequestParam(value = "startlat", defaultValue = "38") String startlat,
             @RequestParam(value = "finlon", defaultValue = "56") String finlon,
             @RequestParam(value = "start", defaultValue = "40") String finlat,
-            @RequestParam(value = "starttime", defaultValue = "2019-07-01T10:00") String startTime
+            @RequestParam(value = "startTime", defaultValue = "2019-07-01T10:00") String startTime
             ) throws IOException, URISyntaxException {
 
-       List<Car> recievedList = requestToSkyScanner(startlon, startlat, finlon, finlat, startTime).getCars();
-       recievedList = recievedList.subList(0, recievedList.size() < 5 ? recievedList.size() : 4);
-       return modifyCar(recievedList);
+       Example recievedList = requestToSkyScanner(startlon, startlat, finlon, finlat, startTime);
+       List<Car> cars = recievedList != null ? recievedList.getCars() : new ArrayList<>();
+       cars = cars != null? cars.subList(0, cars.size() < 5 ? cars.size() : 4): new ArrayList<>();
+       return modifyCar(cars);
 
         /*return new CarClass(counter.incrementAndGet(),
                 String.format(template, name));*/
     }
+
 
     private Example requestToSkyScanner(String... params) throws URISyntaxException, IOException {
 
         //TODO enter the reques params in URI
         HttpClient client = HttpClients.createDefault();
         HttpGet request = new HttpGet();
-        String uri = SCYCSANNER_HOST + GET_CARS + params[4] +"35" + "?" + APIKEY +
+        String uri = SCYCSANNER_HOST + GET_CARS + params[4] +"/35" + "?" + APIKEY +
                 "&" + USERIP;
         request.setURI(new URI(uri));
         request.addHeader("content-type",

@@ -13,6 +13,15 @@ public class CarModified {
 
     private Double priceAllDays;
 
+    public void setChained(boolean chained) {
+        isChained = chained;
+    }
+
+    public boolean isChained() {
+
+        return isChained;
+    }
+
     private boolean isChained;
 
     public Double getPriceAllDays() {
