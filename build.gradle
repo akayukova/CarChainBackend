@@ -36,6 +36,9 @@ dependencies {
     compile 'mysql:mysql-connector-java:5.1.31'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile 'commons-dbcp:commons-dbcp:1.4'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
+    compile ("com.fasterxml.jackson.core:jackson-core:2.9.7")
+    compile ("com.fasterxml.jackson.core:jackson-databind:2.7.4")
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
     testCompile("org.springframework:spring-test")
     testCompile("junit:junit")

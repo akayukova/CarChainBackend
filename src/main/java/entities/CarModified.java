@@ -1,5 +1,10 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+
+@Data
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class CarModified {
 
     public CarModified(Car car, boolean isChained){
@@ -11,13 +16,15 @@ public class CarModified {
         this.vehicle = car.getVehicle();
     }
 
+    public CarModified(){}
+
     private Double priceAllDays;
 
-    public void setChained(boolean chained) {
+    public void setIsChained(boolean chained) {
         isChained = chained;
     }
 
-    public boolean isChained() {
+    public boolean getIsChained() {
 
         return isChained;
     }
