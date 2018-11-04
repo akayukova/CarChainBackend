@@ -7,13 +7,14 @@ import lombok.Data;
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class CarModified {
 
-    public CarModified(Car car, boolean isChained){
+    public CarModified(Car car, boolean isChained, String url){
         this.isChained = isChained;
         this.location = car.getLocation();
         this.manual = car.getManual();
         this.priceAllDays = car.getPriceAllDays();
         this.websiteId = car.getWebsiteId();
         this.vehicle = car.getVehicle();
+        this.url = url;
     }
 
     public CarModified(){}
@@ -58,6 +59,17 @@ public class CarModified {
     private String vehicle;
 
     private Location location;
+
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+
+        this.url = url;
+    }
 
     public void setPriceAllDays(Double priceAllDays) {
         this.priceAllDays = priceAllDays;

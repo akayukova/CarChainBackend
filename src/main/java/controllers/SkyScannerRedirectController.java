@@ -17,10 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import entities.Car;
-import entities.CarClass;
-import entities.CarModified;
-import entities.Example;
+import entities.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -68,7 +65,7 @@ public class SkyScannerRedirectController {
         Example recievedList = requestToSkyScanner(startlon, startlat, finlon, finlat, startTime);
         List<Car> cars = recievedList != null ? recievedList.getCars() : new ArrayList<>();
         cars = cars != null ? cars.subList(0, cars.size() < 5 ? cars.size() : 4) : new ArrayList<>();
-        List<CarModified> modifyCars = modifyCar(cars);
+        List<CarModified> modifyCars = createCarModified(cars, recievedList.getImages());
         modifyCars.addAll(searchInOursCars(startlat, startlon, finlat, finlon, startTime));
         return modifyCars;
         /*return new CarClass(counter.incrementAndGet(),
@@ -126,18 +123,31 @@ public class SkyScannerRedirectController {
         return null;
     }
 
-    private List<CarModified> modifyCar(List<Car> cars) {
+    /*private List<CarModified> modifyCar(List<Car> cars) {
         List<CarModified> carsModified = new ArrayList<>();
         Iterator<Car> itr = cars.iterator();
         for (Car car : cars) {
             carsModified.add(new CarModified(car, false));
         }
         return carsModified;
-    }
+    }*/
 
     private List<CarModified> searchInOursCars(String... params) {
         //TODO implement the real search
         return carsWeProcess;
+    }
+
+    private List<CarModified> createCarModified(List<Car> cars, List<Image> images){
+        List<CarModified> carsModified = new ArrayList<>();
+        for(Car car : cars){
+            for(Image image : images)
+                if(car.getImageId().equals(image.getId())){
+                   carsModified.add(new CarModified(car, false, image.getUrl())) ;
+                   break;
+                }
+            carsModified.add(new CarModified(car, false, null));
+        }
+        return carsModified;
     }
 }
 
