@@ -6,17 +6,24 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import entities.Car;
 import entities.CarClass;
+import entities.CarModified;
+import entities.Example;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SkyScannerRedirectController {
 
     public static final String SCYCSANNER_HOST = "http://partners.api.skyscanner.net";
-    public static final String GET_CARS = "/apiservices/carhire/liveprices/v2/UK/GBP/en-GB/EDI/EDI/2019-07-01T10:00/2019-07-07T17:00/35";
+    public static final String GET_CARS = "/apiservices/carhire/liveprices/v2/UK/GBP/en-GB/EDI/EDI/2019-07-01T10:00/";
     public static final String APIKEY = "apikey=ah016404381349804974592181457198";
     public static final String USERIP = "userip=10.90.23.72";
 
@@ -34,23 +41,29 @@ public class SkyScannerRedirectController {
     private final AtomicLong counter = new AtomicLong();
 
     @RequestMapping("/getCars")
-    public CarClass getCars(
+    public List<CarModified> getCars(
             @RequestParam(value = "startlon", defaultValue = "55") String startlon,
             @RequestParam(value = "startlat", defaultValue = "38") String startlat,
             @RequestParam(value = "finlon", defaultValue = "56") String finlon,
-            @RequestParam(value = "finlat", defaultValue = "40") String finlat) throws IOException, URISyntaxException {
+            @RequestParam(value = "start", defaultValue = "40") String finlat,
+            @RequestParam(value = "starttime", defaultValue = "2019-07-01T10:00") String startTime
+            ) throws IOException, URISyntaxException {
 
-        return requestToSkyScanner(startlon, startlat, finlon, finlat);
+       List<Car> recievedList = requestToSkyScanner(startlon, startlat, finlon, finlat, startTime).getCars();
+       recievedList = recievedList.subList(0, recievedList.size() < 5 ? recievedList.size() : 4);
+       return modifyCar(recievedList);
+
         /*return new CarClass(counter.incrementAndGet(),
                 String.format(template, name));*/
     }
 
-    private CarClass requestToSkyScanner(String... params) throws URISyntaxException, IOException {
+    private Example requestToSkyScanner(String... params) throws URISyntaxException, IOException {
 
-        HttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet(params[0]);
-        String uri = SCYCSANNER_HOST + GET_CARS + "?" + APIKEY +
-                "$" + USERIP;
+        //TODO enter the reques params in URI
+        HttpClient client = HttpClients.createDefault();
+        HttpGet request = new HttpGet();
+        String uri = SCYCSANNER_HOST + GET_CARS + params[4] +"35" + "?" + APIKEY +
+                "&" + USERIP;
         request.setURI(new URI(uri));
         request.addHeader("content-type",
                 "application/x-www-form-urlencoded");
@@ -58,7 +71,7 @@ public class SkyScannerRedirectController {
         HttpResponse response;
         String result = null;
         InputStream instream = null;
-
+        Reader reader;
         try {
             response = client.execute(request);
             HttpEntity entity = response.getEntity();
@@ -68,11 +81,11 @@ public class SkyScannerRedirectController {
                 instream = entity.getContent();
                 //String json = IOUtils.toString(response.getEntity().getContent());
                 System.out.println("RESPONSE: " + result);
-                Reader reader = new InputStreamReader(instream);
+                reader = new InputStreamReader(instream);
                 Gson gson = new GsonBuilder().create();
-                CarClass cars = gson.fromJson(reader, CarClass.class);
-                System.out.println(cars);
-                return cars;
+                Example exps = gson.fromJson(reader, Example.class);
+                System.out.println(exps);
+                return exps;
                 /*if (response.getStatusLine().getStatusCode() == 200) {
                     netState.setLogginDone(true);
                 }*/
@@ -85,6 +98,15 @@ public class SkyScannerRedirectController {
             }
         }
         return null;
+    }
+
+    private List<CarModified> modifyCar(List<Car> cars){
+        List<CarModified> carsModified= new ArrayList<>();
+        Iterator<Car> itr = cars.iterator();
+        for(Car car : cars){
+            carsModified.add(new CarModified(car, false));
+        }
+        return carsModified;
     }
 
 }
